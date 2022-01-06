@@ -24,6 +24,7 @@ using namespace vex;
 using std::vector;
 using std::string;
 using std::map;
+using std::abs;
 
 // define some useful changes
 #define RESERVE(key,val) key = val;auto RESERVE_ACT
@@ -33,6 +34,7 @@ using std::map;
 #define anon(EXP) []() -> void{EXP;}
 #define opper(a,...) {vector<double>{a}, vector<double>{__VA_ARGS__}}
 #define toggle(key,id) key.pressed( anon(singleAct[id] = true) )
+#define setActionVelocity(action,...) set ## action ## Velocity(__VA_ARGS__)
 
 #define printB(a) Brain.Screen.print(a);Brain.Screen.newLine()
 #define replaceB(a,b) Brain.Screen.clearLine(a);Brain.Screen.setCursor(a,1);Brain.Screen.print(b)
@@ -71,6 +73,10 @@ void preAutonomous(void) {
 }
 
 class DriveInstructions {
+    private:
+    template<class T>
+    void ok(T func,vector<double> data) {
+    }
     public:
     vector<vector<vector<double>>> instructions;
     double speed = 20;
@@ -83,7 +89,11 @@ class DriveInstructions {
                     val.size() > 1 ?
                     Drivetrain.setDriveVelocity(val[1],percent):
                     Drivetrain.setDriveVelocity(speed,percent);
-                    if (val[0] > 0) {
+                    // this works
+                    // val.size() > 1 ?
+                    // Drivetrain.setActionVelocity(Drive,val[1],percent):
+                    // Drivetrain.setActionVelocity(Drive,speed,percent);
+                    if (abs(val[0]) > 0) {
                         Drivetrain.driveFor(forward,val[0],inches);
                     }
                     else {
@@ -95,7 +105,7 @@ class DriveInstructions {
                     val.size() > 1 ?
                     Drivetrain.setTurnVelocity(val[1],percent):
                     Drivetrain.setTurnVelocity(speed,percent);
-                    if (val[0] > 0) {
+                    if (abs(val[0]) > 0) {
                         Drivetrain.turnFor(right,val[0],degrees);
                     }
                     else {
@@ -111,7 +121,7 @@ class DriveInstructions {
                     Arm.setVelocity(val[1],percent):
                     Arm.setVelocity(speed,percent);
 
-                    if (val[0] > 0) {
+                    if (abs(val[0]) > 0) {
                         Arm.spinFor(forward,val[0] * 7,degrees);
                     }
                     else {
@@ -129,11 +139,18 @@ class DriveInstructions {
                     //Drivetrain.drive(forward);
                     int centerFOV = 316/2; // the center of the screen
                     int offsetX = 30; // offset to match the center of the bot
-                    vector<int> objectBounds = {centerFOV+offsetX,centerFOV-offsetX};
+                    map<string,int> objectBounds = {{"left",centerFOV+offsetX},{"right",centerFOV-offsetX}};
                     int lastSeen = 100; // callback number to establish where object was last seen
-                    Eyeball.takeSnapshot(Eyeball__REDGOAL);
+                    Eyeball.takeSnapshot(Eyeball__REDGOAL); // get data about where object is
                     while(true) {
-                        Eyeball.takeSnapshot(Eyeball__REDGOAL);
+                        // Eyeball.takeSnapshot(Eyeball__REDGOAL);
+                        // Eyeball.largestObject.exists ? 
+                        // Eyeball.largestObject.width < val[0] ?
+                        // Eyeball.largestObject.centerX > objectBounds["left"] ?
+                        // anon()
+                        // :
+                        // :
+                        // :
                         if (Eyeball.largestObject.exists) {
                             if (Eyeball.largestObject.width < val[0]) {
                                 if (Eyeball.largestObject.centerX > centerFOV + offsetX) {
