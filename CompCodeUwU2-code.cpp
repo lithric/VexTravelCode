@@ -4,7 +4,8 @@
 //    Author:
 //    Created:
 //    Configuration:        
-//                                                                            
+//    Ports: Eyeball-15, Arm-3R-8F, Drivetrain-1-11-10-9-4Inert, StickyPiston-A
+//    make sure to configure controller to drivetrain                                                                        
 // ----------------------------------------------------------------------------
 
 // Include the V5 Library
@@ -32,9 +33,12 @@ using std::abs;
 #define _USE_MATH_DEFINES
 
 #define anon(EXP) []() -> void{EXP;}
+#define func(type,EXP) () -> type{EXP;}
 #define opper(a,...) {vector<double>{a}, vector<double>{__VA_ARGS__}}
 #define toggle(key,id) key.pressed( anon(singleAct[id] = true) )
-#define setActionVelocity(action,...) set ## action ## Velocity(__VA_ARGS__)
+
+#define setActionVelocity(act,...) set ## act ## Velocity(__VA_ARGS__)
+#define actionFor(act,...) act ## For(__VA_ARGS__)
 
 #define printB(a) Brain.Screen.print(a);Brain.Screen.newLine()
 #define replaceB(a,b) Brain.Screen.clearLine(a);Brain.Screen.setCursor(a,1);Brain.Screen.print(b)
@@ -74,9 +78,6 @@ void preAutonomous(void) {
 
 class DriveInstructions {
     private:
-    template<class T>
-    void ok(T func,vector<double> data) {
-    }
     public:
     vector<vector<vector<double>>> instructions;
     double speed = 20;
@@ -87,18 +88,11 @@ class DriveInstructions {
             switch ((int)key[0]) {
                 case 0: //__drive
                     val.size() > 1 ?
-                    Drivetrain.setDriveVelocity(val[1],percent):
-                    Drivetrain.setDriveVelocity(speed,percent);
-                    // this works
-                    // val.size() > 1 ?
-                    // Drivetrain.setActionVelocity(Drive,val[1],percent):
-                    // Drivetrain.setActionVelocity(Drive,speed,percent);
-                    if (abs(val[0]) > 0) {
-                        Drivetrain.driveFor(forward,val[0],inches);
-                    }
-                    else {
-                        Drivetrain.drive(val[2] > 0 ? forward:reverse);
-                    }
+                    (void)Drivetrain.setDriveVelocity(val[1],percent):
+                    (void)Drivetrain.setDriveVelocity(speed,percent);
+                    abs(val[0]) > 0 ?
+                    (void)Drivetrain.driveFor(forward,val[0],inches):
+                    (void)Drivetrain.drive(val[2] > 0 ? forward:reverse);
                     Drivetrain.setDriveVelocity(speed,percent);
                 break;
                 case 1: //__turn
