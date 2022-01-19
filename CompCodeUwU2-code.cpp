@@ -4,7 +4,12 @@
 //    Author:
 //    Created:
 //    Configuration:        
-//    Ports: Eyeball-15, Arm-3R-8F, Drivetrain-1-11-10-9-4Inert, StickyPiston-A
+//    Ports: 
+//      (Vision Sensor)Eyeball-15
+//      (Motor Group)Arm-3R-8F
+//      (Drivetrain)Drivetrain-1-11-10-9-4Inert
+//      (Digital Out)StickyPiston-A
+//
 //    make sure to configure controller to drivetrain                                                                        
 // ----------------------------------------------------------------------------
 
@@ -260,9 +265,6 @@ void userControl(void) {
   while (true) {
     wait(20, msec);
     while(true) {
-        // on (Y) do {}
-        // on (Y) do {} debugPrint()
-        // on (Y) do {debugMode = !debugMode} then printIf(debugMode,"Debug Mode ON","Debug Mode OFF");
         Controller1.ButtonY.pressed( anon(singleAct[0] = true) );
         Controller1.ButtonY.released( anon(
                 if(singleAct[0]) {
@@ -293,6 +295,9 @@ void userControl(void) {
                 wait(100,msec);
             }
         }
+        // replaceB(2,Controller1.Axis1.position());
+        // replaceB(3,Controller1.Axis2.position());
+        // replaceB(4,Controller1.Axis3.position());
     }
   }
 }
