@@ -23,6 +23,7 @@
 #include <vector>
 #include <map>
 #include <typeinfo>
+#include <fstream>
 // cout << typeid(variable).name() << endl;
 
 // namespaces and imported methods
@@ -102,14 +103,11 @@ class DriveInstructions {
                 break;
                 case 1: //__turn
                     val.size() > 1 ?
-                    Drivetrain.setTurnVelocity(val[1],percent):
-                    Drivetrain.setTurnVelocity(speed,percent);
-                    if (abs(val[0]) > 0) {
-                        Drivetrain.turnFor(right,val[0],degrees);
-                    }
-                    else {
-                        Drivetrain.turn(val[2] > 0 ? right:left);
-                    }
+                    (void)Drivetrain.setTurnVelocity(val[1],percent):
+                    (void)Drivetrain.setTurnVelocity(speed,percent);
+                    abs(val[0]) > 0 ?
+                    (void)Drivetrain.turnFor(right,val[0],degrees):
+                    (void)Drivetrain.turn(val[2] > 0 ? right:left);
                     Drivetrain.setTurnVelocity(speed,percent);
                 break;
                 case 2: //__grab
@@ -117,15 +115,11 @@ class DriveInstructions {
                 break;
                 case 3: //__lift
                     val.size() > 1 ?
-                    Arm.setVelocity(val[1],percent):
-                    Arm.setVelocity(speed,percent);
-
-                    if (abs(val[0]) > 0) {
-                        Arm.spinFor(forward,val[0] * 7,degrees);
-                    }
-                    else {
-                        Arm.spin(val[2] > 0 ? forward:reverse);
-                    }
+                    (void)Arm.setVelocity(val[1],percent):
+                    (void)Arm.setVelocity(speed,percent);
+                    abs(val[0]) > 0 ?
+                    (void)Arm.spinFor(forward,val[0] * 7,degrees):
+                    (void)Arm.spin(val[2] > 0 ? forward:reverse);
                     Arm.setVelocity(speed,percent);
                 break;
                 case 4: //__wait
@@ -133,6 +127,7 @@ class DriveInstructions {
                 break;
                 case 5: //__stop
                     Drivetrain.stop();
+                    Arm.stop();
                 break;
                 case 6: //__chase
                     //Drivetrain.drive(forward);
@@ -140,17 +135,11 @@ class DriveInstructions {
                     int offsetX = 30; // offset to match the center of the bot
                     map<string,int> objectBounds = {{"left",centerFOV+offsetX},{"right",centerFOV-offsetX}};
                     int lastSeen = 100; // callback number to establish where object was last seen
-                    Eyeball.takeSnapshot(Eyeball__REDGOAL); // get data about where object is
+                    //Eyeball.takeSnapshot(Eyeball__REDGOAL); // get data about where object is
                     while(true) {
-                        // Eyeball.takeSnapshot(Eyeball__REDGOAL);
-                        // Eyeball.largestObject.exists ? 
-                        // Eyeball.largestObject.width < val[0] ?
-                        // Eyeball.largestObject.centerX > objectBounds["left"] ?
-                        // anon()
-                        // :
-                        // :
-                        // :
+                        //Eyeball.takeSnapshot(Eyeball__REDGOAL);
                         if (Eyeball.largestObject.exists) {
+                            auto mids = Eyeball.largestObject.centerX;
                             if (Eyeball.largestObject.width < val[0]) {
                                 if (Eyeball.largestObject.centerX > centerFOV + offsetX) {
                                     LeftDriveSmart.spin(forward);RightDriveSmart.stop();
@@ -166,7 +155,7 @@ class DriveInstructions {
                                 }
                             }
                             else {
-                                lastSeen = 100;
+                                lastSeen = 100; // no where
                             }
                         }
                         else {
@@ -259,6 +248,10 @@ int Console_precision = 0;
 
 void userControl(void) {
   Brain.Screen.clearScreen();
+  std::ofstream myfile;
+  myfile.open("example.txt");
+  myfile << "Writing this to a file.\n";
+  myfile.close();
   // place driver control in this while loop
   Arm.setVelocity(50,percent);
   Drivetrain.setDriveVelocity(100,percent);
@@ -287,6 +280,9 @@ void userControl(void) {
             Controller1.ButtonL1.pressing() ? Arm.spin(forward):
             Controller1.ButtonL2.pressing() ? Arm.spin(reverse):
             Arm.stop(hold);
+            Controller1.ButtonR1.pressing() ? Fork.spin(forward):
+            Controller1.ButtonR2.pressing() ? Fork.spin(reverse):
+            Fork.stop(hold);
             Controller1.ButtonX.pressed( anon(singleAct[5] = true) );
             Controller1.ButtonX.released( anon(if (singleAct[5]) {torqueMode = !torqueMode;singleAct[5] = false;}) );
             //Controller1.toggle(ButtonX,6).act();
@@ -295,9 +291,10 @@ void userControl(void) {
                 wait(100,msec);
             }
         }
-        // replaceB(2,Controller1.Axis1.position());
-        // replaceB(3,Controller1.Axis2.position());
-        // replaceB(4,Controller1.Axis3.position());
+        replaceB(2,Controller1.Axis1.position());
+        replaceB(3,Controller1.Axis2.position());
+        replaceB(4,Controller1.Axis3.position());
+
     }
   }
 }
