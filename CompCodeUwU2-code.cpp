@@ -7,7 +7,7 @@
 //    Ports: 
 //      (Vision Sensor)Eyeball-21
 //      (Motor Group)Arm-3R-8F
-//      (Drivetrain)Drivetrain[7:5]-1-11-10-9-5Inert
+//      (Drivetrain)Drivetrain[7:5][Reversed]-1-11-10-9-5Inert
 //      (Digital Out)StickyPiston-A
 //      (Motor Group)Fork-15R-16F
 //
